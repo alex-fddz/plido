@@ -25,7 +25,7 @@ while True:
         h_history = [h]
     elif len(h_history) >= NB_ELEMENT:
         print ("Sending humidity...")
-        s.sendto (cbor.dumps(("humidity", h_history)), ("127.0.0.1", 33033))
+        s.sendto (cbor.dumps(["humidity", h_history]), ("127.0.0.1", 33033))
         h_history = [h]
     else:
         h_history.append(h-h_prev)
@@ -35,7 +35,7 @@ while True:
         t_history = [t]
     elif len(t_history) >= NB_ELEMENT:
         print ("Sending temperature...")
-        s.sendto (cbor.dumps(("temperature", t_history)), ("127.0.0.1", 33033))
+        s.sendto (cbor.dumps(["temperature", t_history]), ("127.0.0.1", 33033))
         t_history = [t]
     else:
         t_history.append(t-t_prev)
@@ -45,7 +45,7 @@ while True:
         p_history = [p]
     elif len(p_history) >= NB_ELEMENT:
         print ("Sending pressure...")
-        s.sendto (cbor.dumps(("pressure", p_history)), ("127.0.0.1", 33033))
+        s.sendto (cbor.dumps(["pressure", p_history]), ("127.0.0.1", 33033))
         p_history = [p]
     else:
         p_history.append(p-p_prev)
