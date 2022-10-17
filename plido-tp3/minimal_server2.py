@@ -18,6 +18,7 @@ while True:
     j = json.loads(data)
     print (j)
 
+    # This already calculates the averages of the three variables + max size of the message
     samples += 1
     t_m += j[0]
     p_m += j[1]

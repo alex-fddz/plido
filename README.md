@@ -2,7 +2,6 @@
 Programmer l'Internet des Objets [imta-mooc]
 
 ## Bienvenue dans le MOOC PLIDO
-========
 
 Ce dépot contient les programmes necessaire pour le MOOC PLIDO (Programmer l'Internet des Objets).
 

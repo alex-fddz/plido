@@ -42,4 +42,12 @@ while True:
     data, addr = s.recvfrom(1500)
 
     j = cbor.loads(data)
-    to_bbt("capteurs", "temperature", j, factor=0.01)
+    
+    h = j[0]
+    t = j[1]
+    p = j[2]
+
+    # to_bbt("Capteurs", "humidity", j, factor=0.01)
+    to_bbt("Capteurs", "humidity", h, factor=0.01)
+    to_bbt("Capteurs", "temperature", t, factor=0.01)
+    to_bbt("Capteurs", "pressure", p, factor=0.01)

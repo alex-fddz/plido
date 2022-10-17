@@ -6,7 +6,7 @@ import cbor2 as cbor
 humidity    = virtual_sensor(start=30, variation = 3, min=20, max=80)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-NB_ELEMENT = 30
+NB_ELEMENT = 30 # 1 element every 10 seconds, 30 elements = 5 minutes
 h_history = []
 
 while True:
