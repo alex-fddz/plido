@@ -41,13 +41,7 @@ def to_bbt(channel, res_name, cbor_msg, factor=1, period=10, epoch=None):
 while True:
     data, addr = s.recvfrom(1500)
 
-    j = cbor.loads(data)
+    j = cbor.loads(data) # a tuple (variable, [data])
     
-    h = j[0]
-    t = j[1]
-    p = j[2]
-
     # to_bbt("Capteurs", "humidity", j, factor=0.01)
-    to_bbt("Capteurs", "humidity", h, factor=0.01)
-    to_bbt("Capteurs", "temperature", t, factor=0.01)
-    to_bbt("Capteurs", "pressure", p, factor=0.01)
+    to_bbt("Capteurs", j[0], j[1], factor=0.01)
