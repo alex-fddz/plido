@@ -1,3 +1,8 @@
-plido-tp*/__pycache__/
 pycom/pymakr.conf
+plido-tp*/__pycache__/
+plido-tp*/aiocoap/__pycache__/
+plido-tp*/aiocoap/numbers/__pycache__/
+plido-tp*/aiocoap/transports/__pycache__/
+plido-tp*/aiocoap/util/__pycache__/
+plido-tp*/aiocoap/util/asyncio/__pycache__/
 
