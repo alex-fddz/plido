@@ -22,9 +22,17 @@ coap.dump(hexa=True)
 s.settimeout(10)
 s.sendto(coap.to_byte(), (SERVER, PORT))
 
-# Await for a response/answer from the server (receiver)
+# I. Await for a response/answer from the server (receiver)
+resp, addr = s.recvfrom(2000)
+answer = CoAP.Message(resp) # 'parse' it as a coap message
+# Print out the message we just got (ACK)
+print("[RCV]:", end=" ")
+answer.dump(hexa=True)
+
+# II. Now we must also get the message with the actual content
 resp, addr = s.recvfrom(2000)
 answer = CoAP.Message(resp) # 'parse' it as a coap message
 # Print out the message we just got
 print("[RCV]:", end=" ")
 answer.dump(hexa=True)
+
