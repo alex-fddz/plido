@@ -193,9 +193,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-v", "--verbose",
                     action="store_true",
                     help="show uplink and downlink messages")
-parser.add_argument('--http_port',  default=9999,
+parser.add_argument('--http_port',  default=9999, # Pokemon port
                     help="set http port for POST requests")
-parser.add_argument('--forward_port',  default=33033,
+parser.add_argument('--forward_port',  default=33033, # 33033+Pokemon port
                     help="port to forward packets")
 parser.add_argument('--forward_address',  default='127.0.0.1',
                     help="IP address to forward packets")
