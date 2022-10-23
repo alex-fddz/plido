@@ -3,13 +3,10 @@ import socket
 import time
 import pycom
 import binascii
-
-# pycom params
-my_app_eui = '0000000000000000'
-my_app_key = '72457475581217131977635496807027'
+from acklio_config import my_app_key, my_app_eui
 
 lora = LoRa(mode=LoRa.LORAWAN, region=LoRa.EU868)
-#
+
 mac = lora.mac()
 print ('devEUI: ',  binascii.hexlify(mac))
 
@@ -19,9 +16,6 @@ app_eui = binascii.unhexlify(
 
 app_key = binascii.unhexlify(
     my_app_key.replace(' ',''))
-    #'B0923EE49E056F29C1482EE5846FADF4'.replace(' ',''))  # TTN
-    #'11223344556677881122334455667788'.replace(' ',''))  # Acklio
-    #'11 00 22 00 33 00 44 00 55 00 66 00 77 00 88 00'.replace(' ',''))  # chirpstack
 
 pycom.heartbeat(False)
 pycom.rgbled(0x101010) # white
