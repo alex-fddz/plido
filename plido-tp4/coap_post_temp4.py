@@ -26,14 +26,17 @@ msg.new_header(code=CoAP.POST, type=CoAP.NON) # Non-Confirmable
 msg.add_option(CoAP.Uri_path, "temp")
 # Encode the "23.5" value in cbor
 msg.add_option(CoAP.Content_format, CoAP.Content_format_CBOR)
-msg.add_payload( cbor.dumps(23.5) )
 
 # IV. Add option No Response
-msg.add_option(CoAP.No_Response, 0x1a) # Is there a code for this?
+msg.add_option(CoAP.No_Response, 0x02) # Is there a code for this?
 # - 2nd LSB set to 1 : No positive acks (2.xx)
 # - 4nd LSB set to 1 : No acks for client errors (4.xx)
 # - 5nd LSB set to 1 : No acks for server errors (5.xx)
 # i.e. 0x02: Only negative acks; 0x1a: No acks whatsoever.
+
+# Append the payload (temp value in cbor)
+msg.add_payload( cbor.dumps(23.5) )
+
 
 # Print out the message we're about to send
 print("[SND]:", end=" ")
