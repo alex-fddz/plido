@@ -1,3 +1,6 @@
+# Send an empty coap message
+# - Use with coap_basic_server1.py
+
 import CoAP
 import socket
 
@@ -18,4 +21,3 @@ resp, addr = s.recvfrom(2000)
 answer = CoAP.Message(resp)
 answer.dump(hexa=True)
 
-    

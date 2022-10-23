@@ -1,3 +1,7 @@
+# Send a GET coap msg w uri path = /time, await an answer (ACK),
+# and receive the message w the content we requested.
+# - Use with coap_basic_server1.py
+
 import CoAP
 import socket
 
