@@ -44,4 +44,4 @@ while True:
     j = cbor.loads(data) # a tuple (variable, [data])
     
     # to_bbt("Capteurs", "humidity", j, factor=0.01)
-    to_bbt("Capteurs", j[0], j[1], factor=0.01)
+    to_bbt("capteurs", j[0], j[1], factor=0.01)
