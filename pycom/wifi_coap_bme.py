@@ -8,7 +8,6 @@
 import socket
 import time
 import pycom
-import binascii
 import BME280
 import kpn_senml.cbor_encoder as cbor
 import CoAP
@@ -43,13 +42,17 @@ destination = (server_ip, server_port)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-# -- MAIN --
+# Init rgb led
+pycom.heartbeat(False)
+pycom.rgbled(0x000000) # off
 
 # Connect BME280 sensor
 i2c = I2C(0, I2C.MASTER, baudrate=400000)
 print (i2c.scan())
 
 bme = BME280.BME280(i2c=i2c)
+
+# -- MAIN --
 
 # Set params
 MEAS_INTERVAL = 10 # secs
@@ -73,7 +76,7 @@ while True:
     s.settimeout(10)
 
     # Flash green while obtaining measurements
-    #pycom.rgbled(0x001000)
+    pycom.rgbled(0x001000)
     
     t = int(bme.read_temperature()*100)
     h = int(bme.read_humidity()*100)
@@ -87,13 +90,13 @@ while True:
         # Build CoAP message
         t_coap = newCoAPPostMsg("temperature", t_history)
         print ("Sending temperature...", end="\t")
-        #pycom.rgbled(0x000010) # blue
+        pycom.rgbled(0x000010) # blue
         try:
             answer = CoAP.send_ack(s, destination, t_coap)
             showAnswerIf(answer, s)
             print("[OK]")
         except:
-            #pycom.rgbled(0x100000) # red
+            pycom.rgbled(0x100000) # red
             print("[ERR]: Timeout.")
         t_history = [t]
         len_t = 1
@@ -109,13 +112,13 @@ while True:
         # Build CoAP message
         h_coap = newCoAPPostMsg("humidity", h_history)
         print ("Sending humidity...", end="\t")
-        #pycom.rgbled(0x000010) # blue
+        pycom.rgbled(0x000010) # blue
         try:
             answer = CoAP.send_ack(s, destination, h_coap)
             showAnswerIf(answer, s)
             print("[OK]")
         except:
-            #pycom.rgbled(0x100000) # red
+            pycom.rgbled(0x100000) # red
             print("[ERR]: Timeout.")
         h_history = [h]
         len_h = 1
@@ -131,13 +134,13 @@ while True:
         # Build CoAP message
         p_coap = newCoAPPostMsg("pressure", p_history)
         print("Sending pressure...", end="\t")
-        #pycom.rgbled(0x000010) # blue
+        pycom.rgbled(0x000010) # blue
         try:
             answer = CoAP.send_ack(s, destination, p_coap)
             showAnswerIf(answer, s)
             print("[OK]")
         except:
-            #pycom.rgbled(0x100000) # red
+            pycom.rgbled(0x100000) # red
             print("[ERR]: Timeout.")
         p_history = [p]
         len_p = 1
@@ -150,7 +153,7 @@ while True:
     p_prev = p
 
     # Turn off led while sleeping
-    #pycom.rgbled(0x000000)
+    pycom.rgbled(0x000000)
     print("(", len_t, "/", NB_ELEMENT, ")", 
         " z Z z z")
     s.setblocking(False)
