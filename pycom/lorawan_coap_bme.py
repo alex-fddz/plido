@@ -152,9 +152,9 @@ print("- Measuring every", MEAS_INTERVAL,
     "seconds, and sending every", SEND_INTERVAL,
     "minute(s):", NB_ELEMENT, "elements per message.")
 
-t_history = []
-h_history = []
-p_history = []
+t_history, t_prev = [], 0
+h_history, h_prev = [], 0
+p_history, p_prev = [], 0
 # For some reason I cannot use len() !?!?
 len_t = 0
 len_h = 0
