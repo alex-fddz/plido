@@ -160,6 +160,10 @@ len_t = 0
 len_h = 0
 len_p = 0
 
+# Extra/challenge: Also send available memory
+m_history, m_prev = [], 0
+len_m = 0
+
 while True:
     # Config socket/send msg
     s.setblocking(True)
@@ -171,6 +175,9 @@ while True:
     t = int(bme.read_temperature()*100)
     h = int(bme.read_humidity()*100)
     p = int(bme.read_pressure()*100)
+    
+    free, total = pycom.get_free_heap()
+    m = int(100 * free / total)
 
     # Build historians and send when ready
     t_history, len_t = processData(t_history, len_t, 
@@ -179,10 +186,13 @@ while True:
         h, h_prev, "humidity")
     p_history, len_p = processData(p_history, len_p, 
         p, p_prev, "pressure")
+    m_history, len_m = processData(m_history, len_m, 
+        m, m_prev, "memory")
 
     t_prev = t
     h_prev = h
     p_prev = p
+    m_prev = m
 
     # Turn off led while sleeping
     pycom.rgbled(0x000000)
