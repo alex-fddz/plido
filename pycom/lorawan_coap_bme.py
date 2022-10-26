@@ -18,6 +18,38 @@ import CoAP
 from machine import I2C
 from acklio_config import my_app_eui, my_app_key
 
+def CoAP_send_ack_lora(s, coap):
+    import time
+
+    if not coap.get_type() in [CoAP.CON, CoAP.NON]:
+        raise ValueError ("Not a CON or NON message")
+
+    c_mid = coap.get_mid()
+    timeout = 2
+    attempts = 1
+
+    while True:
+        s.send(coap.to_byte())
+
+        if coap.get_type() == CoAP.NON:
+            return None
+
+        s.settimeout(10)
+        try:
+            resp,addr = s.recvfrom(2000)
+            answer = CoAP.Message(resp)
+            if answer.get_mid() == c_mid:
+                return answer
+        except:
+            print ("timeout", timeout, attempts)
+            time.sleep (timeout)
+            timeout *= 2
+            attempts +=1
+            if attempts > 4:
+                raise ValueError("Too many attempts")
+
+
+
 def newCoAPPostMsg(uri_path, payload):
     """
     Create a new CoAP Message of type NON-confirmable,
@@ -31,20 +63,6 @@ def newCoAPPostMsg(uri_path, payload):
     msg.add_option(CoAP.No_Response, 0x02)
     msg.add_payload(cbor.dumps(payload))
     return msg
-
-def sendPostCoAPMsg(s, uri_path, payload):
-    """
-    Create a new CoAP Message of type NON-confirmable,
-    with POST code and CBOR-encoded payload.
-    """
-    msg = CoAP.Message()
-    msg.new_header(type=CoAP.NON, code=CoAP.POST)
-    msg.add_option(CoAP.Uri_path, uri_path)
-    msg.add_option(CoAP.Content_format, 
-        CoAP.Content_format_CBOR)
-    msg.add_option(CoAP.No_Response, 0x02)
-    msg.add_payload(cbor.dumps(payload))
-    s.send(msg)
 
 def showAnswerIf(answer, s):
     if answer is not None:
@@ -130,17 +148,16 @@ while True:
         len_t = 1
     elif len_t >= NB_ELEMENT:
         # Build CoAP message
-        t_coap = newCoAPPostMsg("temperature", t_history) # send 1 first / test
+        t_coap = newCoAPPostMsg("temperature", t_history) 
         print ("Sending temperature...", end="\t")
         pycom.rgbled(0x000010) # blue
-        #try:
-        s.send(t_coap)
-            # answer = CoAP.send_ack(s, destination, t_coap)
-            # showAnswerIf(answer, s)
-        print("[OK]")
-        #except:
-        pycom.rgbled(0x100000) # red
-        print("[ERR]: Timeout.")
+        try:
+            answer = CoAP_send_ack_lora(s, t_coap)
+            showAnswerIf(answer, s)
+            print("[OK]")
+        except:
+            pycom.rgbled(0x100000) # red
+            print("[ERR]: Timeout.")
         t_history = [t]
         len_t = 1
     else:
@@ -153,13 +170,12 @@ while True:
         len_h = 1
     elif len_h >= NB_ELEMENT:
         # Build CoAP message
-        h_coap = newCoAPPostMsg("humidity", h_history) # send 1 first / test
+        h_coap = newCoAPPostMsg("humidity", h_history) 
         print ("Sending humidity...", end="\t")
         pycom.rgbled(0x000010) # blue
         try:
-            s.send(h_coap)
-            # answer = CoAP.send_ack(s, destination, t_coap)
-            # showAnswerIf(answer, s)
+            answer = CoAP_send_ack_lora(s, h_coap)
+            showAnswerIf(answer, s)
             print("[OK]")
         except:
             pycom.rgbled(0x100000) # red
@@ -176,13 +192,12 @@ while True:
         len_p = 1
     elif len_p >= NB_ELEMENT:
         # Build CoAP message
-        p_coap = newCoAPPostMsg("pressure", p_history) # send 1 first / test
+        p_coap = newCoAPPostMsg("pressure", p_history) 
         print("Sending pressure...", end="\t")
         pycom.rgbled(0x000010) # blue
         try:
-            s.send(p_coap)
-            # answer = CoAP.send_ack(s, destination, t_coap)
-            # showAnswerIf(answer, s)
+            answer = CoAP_send_ack_lora(s, p_coap)
+            showAnswerIf(answer, s)
             print("[OK]")
         except:
             pycom.rgbled(0x100000) # red
