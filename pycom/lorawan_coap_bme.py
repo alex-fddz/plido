@@ -19,6 +19,7 @@ from machine import I2C
 from acklio_config import my_app_eui, my_app_key
 
 def CoAP_send_ack_lora(s, coap):
+    """Custom CoAP.send_ack method for LoRa/Acklio."""
     import time
 
     if not coap.get_type() in [CoAP.CON, CoAP.NON]:
@@ -48,8 +49,6 @@ def CoAP_send_ack_lora(s, coap):
             if attempts > 4:
                 raise ValueError("Too many attempts")
 
-
-
 def newCoAPPostMsg(uri_path, payload):
     """
     Create a new CoAP Message of type NON-confirmable,
@@ -71,6 +70,37 @@ def showAnswerIf(answer, s):
         answer = CoAP.get_msg(s)
         if answer is not None:
             answer.dump()
+
+def processData(var_hist, len_hist, new_val, prev_val, uri):
+    """
+    Build variable's historian and Send when ready.
+    Updates len_hist.
+    """
+    # global NB_ELEMENT 
+    # Build variable history array
+    if len_hist == 0:
+        var_hist = [new_val]
+        len_hist = 1
+    elif len_hist >= NB_ELEMENT:
+        # Build and send CoAP message
+        coap_msg = newCoAPPostMsg(uri, var_hist)
+        print ("Sending {}...".format(uri), end="\t")
+        pycom.rgbled(0x000010) # blue
+        try:
+            answer = CoAP_send_ack_lora(s, coap_msg)
+            showAnswerIf(answer, s)
+            print("[OK]")
+        except:
+            pycom.rgbled(0x100000) # red
+            print("[ERR]: Timeout.")
+        var_hist = [new_val]
+        len_hist = 1
+    else:
+        var_hist.append(new_val-prev_val)
+        len_hist += 1
+    return var_hist, len_hist
+
+# -- SETUP --
 
 # Connect to LoRaWAN
 lora = LoRa(mode=LoRa.LORAWAN, region=LoRa.EU868)
@@ -141,72 +171,14 @@ while True:
     t = int(bme.read_temperature()*100)
     h = int(bme.read_humidity()*100)
     p = int(bme.read_pressure()*100)
-    
-    # Build Temperature historian msg
-    if len_t == 0:
-        t_history = [t]
-        len_t = 1
-    elif len_t >= NB_ELEMENT:
-        # Build CoAP message
-        t_coap = newCoAPPostMsg("temperature", t_history) 
-        print ("Sending temperature...", end="\t")
-        pycom.rgbled(0x000010) # blue
-        try:
-            answer = CoAP_send_ack_lora(s, t_coap)
-            showAnswerIf(answer, s)
-            print("[OK]")
-        except:
-            pycom.rgbled(0x100000) # red
-            print("[ERR]: Timeout.")
-        t_history = [t]
-        len_t = 1
-    else:
-        t_history.append(t-t_prev)
-        len_t += 1
 
-    # Build Humidity historian msg
-    if len_h == 0:
-        h_history = [h]
-        len_h = 1
-    elif len_h >= NB_ELEMENT:
-        # Build CoAP message
-        h_coap = newCoAPPostMsg("humidity", h_history) 
-        print ("Sending humidity...", end="\t")
-        pycom.rgbled(0x000010) # blue
-        try:
-            answer = CoAP_send_ack_lora(s, h_coap)
-            showAnswerIf(answer, s)
-            print("[OK]")
-        except:
-            pycom.rgbled(0x100000) # red
-            print("[ERR]: Timeout.")
-        h_history = [h]
-        len_h = 1
-    else:
-        h_history.append(h-h_prev)
-        len_h += 1
-
-    # Build Pressure historian msg
-    if len_p == 0:
-        p_history = [p]
-        len_p = 1
-    elif len_p >= NB_ELEMENT:
-        # Build CoAP message
-        p_coap = newCoAPPostMsg("pressure", p_history) 
-        print("Sending pressure...", end="\t")
-        pycom.rgbled(0x000010) # blue
-        try:
-            answer = CoAP_send_ack_lora(s, p_coap)
-            showAnswerIf(answer, s)
-            print("[OK]")
-        except:
-            pycom.rgbled(0x100000) # red
-            print("[ERR]: Timeout.")
-        p_history = [p]
-        len_p = 1
-    else:
-        p_history.append(p-p_prev)
-        len_p += 1
+    # Build historians and send when ready
+    t_history, len_t = processData(t_history, len_t, 
+        t, t_prev, "temperature")
+    h_history, len_h = processData(h_history, len_h, 
+        h, h_prev, "humidity")
+    p_history, len_p = processData(p_history, len_p, 
+        p, p_prev, "pressure")
 
     t_prev = t
     h_prev = h
