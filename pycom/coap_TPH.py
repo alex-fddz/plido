@@ -14,7 +14,7 @@ messages (4.xx and 5.xx) and not taken into account by the program.
 """
 #SERVER = "LORAWAN" # change to your server's IP address, or SIGFOX or LORAWAN
 #SERVER="SIGFOX"
-SERVER = "192.168.1.25" # change to your server's IP address, or SIGFOX or LORAWAN
+SERVER = "192.168.43.82" # change to your server's IP address, or SIGFOX or LORAWAN
 PORT   = 5683
 destination = (SERVER, PORT)
 
@@ -35,8 +35,6 @@ else:
     import psutil
 
 #----- CONNECT TO THE APPROPRIATE NETWORK --------
-
-
 
 sigfox = False
 if SERVER == "LORAWAN":

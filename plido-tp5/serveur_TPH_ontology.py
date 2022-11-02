@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
 # This file is part of the Python aiocoap library project.
 #
@@ -42,8 +42,9 @@ collection = []
 # establish the context with beebotte.
 bbt = beebotte.BBT(config_bbt.API_KEY, config_bbt.SECRET_KEY) 
 
+# ! Config *period* of measurements here (as in pycom program):
 
-def to_bbt(channel, res_name, msg, factor=1, period=10, epoch=None):
+def to_bbt(channel, res_name, msg, factor=1, period=60, epoch=None):
     """This function takes a python array representing a time serie 
     and transform it into a JSON structure expected by beebotte. 
     - channel and res_name are names defined in the Beebotte account 
@@ -137,7 +138,7 @@ class temperature(resource.Resource):
         # cbor will be displayed and processed.
         elif ct == aiocoap.numbers.media_types_rev['application/cbor']:
             print ("cbor:", cbor.loads(request.payload))
-            to_bbt("capteurs", "temperature", cbor.loads(request.payload), period=60, factor=0.01)
+            to_bbt("capteurs", "temperature", cbor.loads(request.payload), factor=0.01)
         else:
             print ("Unknown format")
             return aiocoap.Message(code=aiocoap.UNSUPPORTED_MEDIA_TYPE)
@@ -155,7 +156,7 @@ class pressure(resource.Resource):
             print ("text:", request.payload)
         elif ct == aiocoap.numbers.media_types_rev['application/cbor']:
             print ("cbor:", cbor.loads(request.payload))
-            to_bbt("capteurs", "pressure", cbor.loads(request.payload), period=1, factor=0.01)
+            to_bbt("capteurs", "pressure", cbor.loads(request.payload), factor=0.01)
         else:
             print ("Unknown format")
             return aiocoap.Message(code=aiocoap.UNSUPPORTED_MEDIA_TYPE)
@@ -171,7 +172,7 @@ class humidity(resource.Resource):
             print ("text:", request.payload)
         elif ct == aiocoap.numbers.media_types_rev['application/cbor']:
             print ("cbor:", cbor.loads(request.payload))
-            to_bbt("capteurs", "humidity", cbor.loads(request.payload), period=60, factor=1)
+            to_bbt("capteurs", "humidity", cbor.loads(request.payload), factor=0.01)
 
         else:
             print ("Unknown format")
@@ -226,15 +227,15 @@ def main():
     # MUST be changed with your device characteristics
     #
 
-    MY_SENSOR_ID = "CHANGE_ME_TO_DEVID"
+    MY_SENSOR_ID = "70b3d5499e904fd4" # devEUI
 
     my_sensor = {
         "@context": "http://user.ackl.io/schema/Sensor",
         "ThingID" : MY_SENSOR_ID,
-        "Name" : "Room 23",
+        "Name" : "Room 121",
         "Manufacturer" : "pycom LOPY4",
         "Link" : "LoRaWAN Acklio",
-        "Location" : "Room 23",
+        "Location" : "Room 121",
         "Address" : MY_SENSOR_ID
         }
 

@@ -42,6 +42,7 @@ collection = []
 # establish the context with beebotte.
 bbt = beebotte.BBT(config_bbt.API_KEY, config_bbt.SECRET_KEY) 
 
+# ! Config *period* as in lopy code (measurement interval in seconds)
 
 def to_bbt(channel, res_name, msg, factor=1, period=10, epoch=None):
     """This function takes a python array representing a time serie 
@@ -137,7 +138,7 @@ class temperature(resource.Resource):
         # cbor will be displayed and processed.
         elif ct == aiocoap.numbers.media_types_rev['application/cbor']:
             print ("cbor:", cbor.loads(request.payload))
-            to_bbt("capteurs", "temperature", cbor.loads(request.payload), period=60, factor=0.01)
+            to_bbt("capteurs", "temperature", cbor.loads(request.payload), factor=0.01)
         else:
             print ("Unknown format")
             return aiocoap.Message(code=aiocoap.UNSUPPORTED_MEDIA_TYPE)
@@ -155,7 +156,7 @@ class pressure(resource.Resource):
             print ("text:", request.payload)
         elif ct == aiocoap.numbers.media_types_rev['application/cbor']:
             print ("cbor:", cbor.loads(request.payload))
-            to_bbt("capteurs", "pressure", cbor.loads(request.payload), period=1, factor=0.01)
+            to_bbt("capteurs", "pressure", cbor.loads(request.payload), factor=0.01)
         else:
             print ("Unknown format")
             return aiocoap.Message(code=aiocoap.UNSUPPORTED_MEDIA_TYPE)
@@ -171,7 +172,7 @@ class humidity(resource.Resource):
             print ("text:", request.payload)
         elif ct == aiocoap.numbers.media_types_rev['application/cbor']:
             print ("cbor:", cbor.loads(request.payload))
-            to_bbt("capteurs", "humidity", cbor.loads(request.payload), period=60, factor=1)
+            to_bbt("capteurs", "humidity", cbor.loads(request.payload), factor=0.01)
 
         else:
             print ("Unknown format")

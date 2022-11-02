@@ -10,7 +10,7 @@ measure = db.measure
 
 list_of_locations = measure.find({"@context": "http://user.ackl.io/schema/Sensor"})
 
-sensor_location = "Room A123"
+sensor_location = "Room 121"
 
 found_item = measure.find_one ({"Location" : sensor_location })
 if found_item is None:
@@ -21,7 +21,8 @@ else:
 print (sensor_id)
 
 currentDate = datetime.datetime.utcnow()
-oneHourAgo = currentDate - datetime.timedelta(seconds=3600)
+#oneHourAgo = currentDate - datetime.timedelta(seconds=3600)
+oneHourAgo = currentDate - datetime.timedelta(hours=5)
 
 print (oneHourAgo)
 print (oneHourAgo.isoformat())
@@ -51,18 +52,18 @@ for r in res:
     y = np.array(r["y"])
 
     print (len(x))
-
     print (len(y))
 
-e = mdates.datestr2num(x)
+try:
+    e = mdates.datestr2num(x)
 
+    fig, ax = plt.subplots()
+    plt.plot_date(e, y, linestyle="solid")
 
-fig, ax = plt.subplots()
-plt.plot_date(e, y, linestyle="solid")
+    plt.title("Sensor values in the last hour")
+    ax.fmt_xdata = mdates.DateFormatter('%m-%d %H:%M:%S')
+    fig.autofmt_xdate()
 
-plt.title("Sensor values in the last hour")
-ax.fmt_xdata = mdates.DateFormatter('%m-%d %H:%M:%S')
-fig.autofmt_xdate()
-
-plt.show()
-
+    plt.show()
+except:
+    print("No Results found in the given time frame.")
