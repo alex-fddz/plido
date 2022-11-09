@@ -8,7 +8,7 @@ client = MongoClient()
 db = client["meteo-data"]
 measure = db.measure
 
-sensor_location = "Room 23"
+sensor_location = "Room 121"
 
 found_item = measure.find_one ({"Location" : sensor_location })
 if found_item is None:
@@ -17,8 +17,9 @@ else:
     sensor_id = found_item["_id"]
 
 currentDate = datetime.datetime.utcnow()
-oneDayAgo = currentDate - datetime.timedelta(seconds=3600*24)
-        
+# oneDayAgo = currentDate - datetime.timedelta(seconds=3600*24)
+oneDayAgo = currentDate - datetime.timedelta(days=7)
+
 res = measure.aggregate([
     {"$match":  { "$and" : [
                        {"SensorCharacteristics": sensor_id},
